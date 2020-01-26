@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".admin_home"
+    tools:showIn="@layout/app_bar_admin_home">
+
+    <RelativeLayout xmlns:mapbox="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.mapbox.mapboxsdk.maps.MapView
+            android:id="@+id/mapViewAdmin"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            mapbox:mapbox_cameraZoom="12"></com.mapbox.mapboxsdk.maps.MapView>
+
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            app:cardElevation="10dp">
+
+            <Button
+                android:id="@+id/btnAddSpot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/navigate_buttons"
+                android:text="Add a new Spot"
+                android:textColor="#FFFFFF" />
+        </androidx.cardview.widget.CardView>
+        <LinearLayout
+            android:padding="10dp"
+            android:layout_width="300dp"
+            android:visibility="gone"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:id="@+id/removeMarkersCancelLayout"
+            android:background="@drawable/button"
+            >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tap on markers to remove "
+                android:textColor="#000000"
+                android:gravity="center_horizontal"
+                android:textSize="20dp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnCancelRemove"
+                android:layout_width="100dp"
+                android:gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:layout_height="20dp"
+                android:background="@drawable/button"
+                android:text="Cancel"
+                android:textColor="@color/colorAccent"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    
+    >
+    <item android:title="Log out"
+        android:orderInCategory="1000"
+        app:showAsAction="never"
+        android:id="@+id/logOut"
+        >
+
+    </item>
+
+    <item android:title="Delete marker"
+        android:orderInCategory="1000"
+        app:showAsAction="never"
+        android:id="@+id/delete_marker"
+        />
+
+</menu>

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1027365020380",
+    "firebase_url": "https://grabage-detector.firebaseio.com",
+    "project_id": "grabage-detector",
+    "storage_bucket": "grabage-detector.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1027365020380:android:bdc815d8cba79b74928a19",
+        "android_client_info": {
+          "package_name": "com.app.garbagedetector"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1027365020380-8gcq2qd23iqhdo6ae0nk9j46dam27go4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.app.garbagedetector",
+            "certificate_hash": "793fdf3bbfaf8851612620ca19dc172c21c4e5aa"
+          }
+        },
+        {
+          "client_id": "1027365020380-u77p91ug6prp39mthrfpn3pno2rbcl4l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDU0hKJHqO4FCuWGp5s0y7QsdfwsOF4LvA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1027365020380-u77p91ug6prp39mthrfpn3pno2rbcl4l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
