@@ -76,7 +76,9 @@ public class admin_home extends AppCompatActivity implements NavigationView.OnNa
     FirebaseDatabase database;
     DatabaseReference markerReference;
 
-    Button btnAddSpot,btnRefresh;
+    static int submitted = 0;
+
+    Button btnAddSpot;
     private String garbageType;
 
     List<marker> markers = new ArrayList<marker>();
@@ -109,41 +111,30 @@ public class admin_home extends AppCompatActivity implements NavigationView.OnNa
         mapViewAdmin = findViewById(R.id.mapViewAdmin);
         mapViewAdmin.onCreate(savedInstanceState);
         mapViewAdmin.getMapAsync(this);
+
         final AlertDialog alertDialog = new SpotsDialog(admin_home.this);
         alertDialog.show();
-
-
-        btnCancel = findViewById(R.id.btnCancelRemove);
-        btnRefresh=findViewById(R.id.btnRefresh);
-
-
-        btnRefresh.setOnClickListener(new View.OnClickListener() {
+        final Handler handler = new Handler();
+        final Runnable runnable = new Runnable() {
             @Override
-            public void onClick(View view) {
-                final Handler handler = new Handler();
-                final Runnable runnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        if (alertDialog.isShowing()) {
-                            alertDialog.dismiss();
+            public void run() {
+                if (alertDialog.isShowing()) {
+                    alertDialog.dismiss();
+                    addMarkersFromDatabase();
+                }
+            }
+        };
+        handler.postDelayed(runnable, 3000);
 
-                            addMarkersFromDatabase();
-                        }
-                    }
-                };
-                handler.postDelayed(runnable, 3000);
-
-                alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        handler.removeCallbacks(runnable);
-                    }
-                });
-
+        alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                handler.removeCallbacks(runnable);
             }
         });
 
 
+        btnCancel = findViewById(R.id.btnCancelRemove);
         removeMarkersCancelLayout = findViewById(R.id.removeMarkersCancelLayout);
 
         btnCancel.setOnClickListener(new View.OnClickListener() {
@@ -167,43 +158,7 @@ public class admin_home extends AppCompatActivity implements NavigationView.OnNa
                 showAddSpotDialog();
             }
         });
-    }
 
-
-    private void addMarkersFromDatabase() {
-
-        auth = FirebaseAuth.getInstance();
-        database = FirebaseDatabase.getInstance();
-        markerReference = database.getReferenceFromUrl("https://grabage-detector.firebaseio.com/Markers");
-        markerReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot keyNode : dataSnapshot.getChildren()) {
-                    marker m = keyNode.getValue(marker.class);
-                    markers.add(m);
-                }
-
-                for (int i = 0; i < markers.size(); i++) {
-                    lat.add(markers.get(i).getLat());
-                    lng.add(markers.get(i).getLng());
-                    type.add(markers.get(i).getType());
-                }
-
-
-                for (int i = 0; i < markers.size(); i++) {
-
-                    MarkerOptions markerOptions = new MarkerOptions()
-                            .title(type.get(i))
-                            .position(new LatLng(lat.get(i), lng.get(i)));
-                    mapboxMap.addMarker(markerOptions);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(admin_home.this, "ERROR: " + databaseError.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
     }
 
 
@@ -255,18 +210,6 @@ public class admin_home extends AppCompatActivity implements NavigationView.OnNa
                 }
 
                 try {
-                    MarkerOptions markerOptions = new MarkerOptions()
-                            .title(spinner.getSelectedItem().toString())
-                            .position(new LatLng(Double.parseDouble(etLat.getText().toString()), Double.parseDouble(etLng.getText().toString())));
-                    mapboxMap.addMarker(markerOptions);
-
-                    mapboxMap.animateCamera(newCameraPosition(
-                            new CameraPosition.Builder()
-                                    .target(new LatLng(Double.parseDouble(etLat.getText().toString()), Double.parseDouble(etLng.getText().toString())))
-                                    .zoom(14).build()), 4000);
-
-                    dialogInterface.dismiss();
-                    Toast.makeText(admin_home.this, "Spot Added", Toast.LENGTH_LONG).show();
 
                     marker m = new marker();
                     m.setLat(Double.parseDouble(etLat.getText().toString()));
@@ -288,6 +231,23 @@ public class admin_home extends AppCompatActivity implements NavigationView.OnNa
                                     Toast.makeText(admin_home.this, "ERROR: " + e.getMessage(), Toast.LENGTH_LONG).show();
                                 }
                             });
+
+
+                    MarkerOptions markerOptions = new MarkerOptions()
+                            .title(spinner.getSelectedItem().toString())
+                            .position(new LatLng(Double.parseDouble(etLat.getText().toString()), Double.parseDouble(etLng.getText().toString())));
+                    mapboxMap.addMarker(markerOptions);
+
+                    mapboxMap.animateCamera(newCameraPosition(
+                            new CameraPosition.Builder()
+                                    .target(new LatLng(Double.parseDouble(etLat.getText().toString()), Double.parseDouble(etLng.getText().toString())))
+                                    .zoom(5).build()), 4000);
+
+                    dialogInterface.dismiss();
+                    Toast.makeText(admin_home.this, "Spot Added", Toast.LENGTH_LONG).show();
+
+                    submitted++;
+
                 } catch (Exception e) {
                     Toast.makeText(admin_home.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     return;
@@ -374,6 +334,7 @@ public class admin_home extends AppCompatActivity implements NavigationView.OnNa
     @SuppressWarnings({"MissingPermission"})
     protected void onStart() {
         super.onStart();
+        submitted = 0;
         mapViewAdmin.onStart();
     }
 
@@ -444,7 +405,6 @@ public class admin_home extends AppCompatActivity implements NavigationView.OnNa
                 startActivity(new Intent(admin_home.this, MainActivity.class));
                 break;
 
-
             case (R.id.delete_marker):
                 deleteMarker();
                 break;
@@ -454,47 +414,91 @@ public class admin_home extends AppCompatActivity implements NavigationView.OnNa
     }
 
     private void deleteMarker() {
-        if (!mapboxMap.getMarkers().isEmpty()) {
-
-            Toast.makeText(this, "Select the spot you want to delete", Toast.LENGTH_LONG).show();
-
-            removeMarkersCancelLayout.setVisibility(View.VISIBLE);
-
-            final LatLngBounds bounds = new LatLngBounds.Builder().include(new LatLng(lat.get(0), lng.get(0))).include(new LatLng(lat.get(markers.size() - 1), lng.get(markers.size() - 1))).build();
-            mapboxMap.animateCamera(CameraUpdateFactory
-                    .newLatLngBounds(bounds, 200), 4000);
-
-
-            mapboxMap.setOnMarkerClickListener(new MapboxMap.OnMarkerClickListener() {
-                @Override
-                public boolean onMarkerClick(@NonNull final Marker marker) {
-
-                    DatabaseReference removeMarkerReference = FirebaseDatabase.getInstance().getReference();
-                    Query removeMarkerQuery = removeMarkerReference.child("Markers").orderByChild("lat").equalTo(marker.getPosition().getLatitude());
-
-                    removeMarkerQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NotNull DataSnapshot dataSnapshot) {
-                            for (DataSnapshot markerSnapshot : dataSnapshot.getChildren()) {
-                                markerSnapshot.getRef().getParent().removeValue();
-                                marker.remove();
-                                Toast.makeText(admin_home.this, "Spot removed", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                        @Override
-                        public void onCancelled(@NotNull DatabaseError databaseError) {
-                            Toast.makeText(admin_home.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    return true;
-                }
-            });
+        if (submitted >= 1) {
+            Toast.makeText(this, "Restart app to delete recently added spots", Toast.LENGTH_SHORT).show();
         }
+        else
+            {
+            if (!mapboxMap.getMarkers().isEmpty()) {
 
-        else {
-            Toast.makeText(this, "No spots found", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Select the spot you want to delete", Toast.LENGTH_LONG).show();
+                removeMarkersCancelLayout.setVisibility(View.VISIBLE);
+
+                final LatLngBounds bounds = new LatLngBounds.Builder().include(new LatLng(lat.get(0), lng.get(0))).include(new LatLng(lat.get(markers.size() - 1), lng.get(markers.size() - 1))).build();
+                mapboxMap.animateCamera(CameraUpdateFactory
+                        .newLatLngBounds(bounds, 200), 4000);
+
+                mapboxMap.animateCamera(newCameraPosition(
+                        new CameraPosition.Builder()
+                                .target(new LatLng(lat.get(0), lng.get(0)))
+                                .zoom(2).build()), 4000);
+
+                mapboxMap.setOnMarkerClickListener(new MapboxMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(@NonNull final Marker marker) {
+                        DatabaseReference removeMarkerReference = FirebaseDatabase.getInstance().getReference();
+                        Query removeMarkerQuery = removeMarkerReference.child("Markers").orderByChild("lat").equalTo(marker.getPosition().getLatitude());
+
+                        removeMarkerQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NotNull DataSnapshot dataSnapshot) {
+                                for (DataSnapshot markerSnapshot : dataSnapshot.getChildren()) {
+                                    markerSnapshot.getRef().removeValue();
+                                    marker.remove();
+                                    Toast.makeText(admin_home.this, "Spot removed", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NotNull DatabaseError databaseError) {
+                                Toast.makeText(admin_home.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        return true;
+                    }
+                });
+            } else {
+                Toast.makeText(this, "No spots found", Toast.LENGTH_SHORT).show();
+            }
         }
     }
+
+
+    private void addMarkersFromDatabase() {
+        auth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance();
+        markerReference = database.getReferenceFromUrl("https://grabage-detector.firebaseio.com/Markers");
+        markerReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot keyNode : dataSnapshot.getChildren()) {
+                    marker m = keyNode.getValue(marker.class);
+                    markers.add(m);
+                }
+
+                for (int i = 0; i < markers.size(); i++) {
+                    lat.add(markers.get(i).getLat());
+                    lng.add(markers.get(i).getLng());
+                    type.add(markers.get(i).getType());
+                }
+
+
+                for (int i = 0; i < markers.size(); i++) {
+
+                    MarkerOptions markerOptions = new MarkerOptions()
+                            .title(type.get(i))
+                            .position(new LatLng(lat.get(i), lng.get(i)));
+                    mapboxMap.addMarker(markerOptions);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(admin_home.this, "ERROR: " + databaseError.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -506,4 +510,6 @@ public class admin_home extends AppCompatActivity implements NavigationView.OnNa
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
 }
