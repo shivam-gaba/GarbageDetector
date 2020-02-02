@@ -388,7 +388,6 @@ public class user_home extends AppCompatActivity implements NavigationView.OnNav
 
     private void addMarkersFromDatabase() {
 
-        FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference markerReference = database.getReferenceFromUrl("https://grabage-detector.firebaseio.com/Markers");
         markerReference.addValueEventListener(new ValueEventListener() {
@@ -418,6 +417,7 @@ public class user_home extends AppCompatActivity implements NavigationView.OnNav
                             .position(new LatLng(lat.get(i), lng.get(i)));
                     mapboxMap.addMarker(markerOptions);
                 }
+                availableMarkers=markers.size();
             }
 
             @Override
