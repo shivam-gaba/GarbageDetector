@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void showForgotPasswordDialog() {
+
     final android.app.AlertDialog.Builder dialog = new android.app.AlertDialog.Builder(this);
     LayoutInflater inflater = LayoutInflater.from(this);
     View login_layout = inflater.inflate(R.layout.forgot_password, null);
@@ -114,7 +115,6 @@ public class MainActivity extends AppCompatActivity {
                     Snackbar.make(findViewById(R.id.mainActivity), e.getMessage(), Snackbar.LENGTH_LONG).show();
                   }
                 });
-
         waitingDialog.dismiss();
       }
     })
@@ -192,7 +192,6 @@ public class MainActivity extends AppCompatActivity {
                 });
       }
     })
-
             .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
               @Override
               public void onClick(DialogInterface dialogInterface, int i) {

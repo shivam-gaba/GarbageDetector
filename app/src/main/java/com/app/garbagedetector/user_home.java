@@ -85,11 +85,10 @@ public class user_home extends AppCompatActivity implements NavigationView.OnNav
 
         Mapbox.getInstance(this, "pk.eyJ1Ijoic2hpdjg5NjhzaCIsImEiOiJjazVpZmY1eWIwY3Z3M21udnUwMHo5dzhnIn0.pkfihC9BK2VQTZwy-DMJLw");
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
         setContentView(R.layout.activity_user_home);
-
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         final NavigationView navigationView = findViewById(R.id.nav_view);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -384,7 +383,6 @@ public class user_home extends AppCompatActivity implements NavigationView.OnNav
 
                 });
     }
-
 
     private void addMarkersFromDatabase() {
 

@@ -15,9 +15,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:gravity="center_horizontal"
-        android:text="Garbage Tracker"
+        android:text="Garbage Detector"
         android:textColor="#FFFFFF"
-        android:textSize="45dp"
+        android:textSize="43dp"
         android:textStyle="bold" />
 
     <TextView
